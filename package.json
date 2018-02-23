@@ -1,0 +1,22 @@
+{
+  "name": "kaba-scss",
+  "version": "0.0.1",
+  "description": "A small builder for SCSS",
+  "main": "index.js",
+  "scripts": {
+    "build": "node test.js"
+  },
+  "author": "",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "autoprefixer": "^8.0.0",
+    "chokidar": "^2.0.2",
+    "csso": "^3.5.0",
+    "fs-extra": "^5.0.0",
+    "node-sass": "^4.7.2",
+    "postcss": "^6.0.19",
+    "postcss-reporter": "^5.0.0",
+    "postcss-scss": "^1.0.3",
+    "stylelint": "^9.1.1"
+  }
+}
