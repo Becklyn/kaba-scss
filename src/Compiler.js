@@ -55,16 +55,9 @@ class Compiler
 
         /**
          * @private
-         * @type {postcss.Processor}
+         * @type {String}
          */
-        this.linter = postcss([
-            require("stylelint")({
-                configFile: require.resolve("kaba/.stylelintrc.yml"),
-            }),
-            require("postcss-reporter")({
-                clearReportedMessages: true,
-            }),
-        ]);
+        this.stylelintConfigFile = require.resolve("kaba/.stylelintrc.yml");
 
         /**
          * @private
@@ -151,7 +144,7 @@ class Compiler
     {
         /** @type {StylelintResult} outer */
         const outer = await stylelint.lint({
-            configFile: require.resolve("kaba/.stylelintrc.yml"),
+            configFile: this.stylelintConfigFile,
             files: files,
             formatter: "string",
             cache: true,
