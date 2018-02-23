@@ -16,9 +16,19 @@ const path = require("path");
  *      isDebug: boolean,
  *      includeSourceMaps: boolean,
  *      isWatch: boolean,
+ *      lint: boolean,
+ *      analyze: boolean,
  *      cwd: string,
  *      browserlist: string[],
  * }} KabaScssConfig
+ *
+ *
+ * @typedef {{
+ *      errored: boolean,
+ *      output: string,
+ *      postcssResult: LazyResult[],
+ *      results: array,
+ * }} StylelintResult
  */
 
 /**
@@ -82,11 +92,18 @@ class KabaScss
      * Compiles all entry files
      *
      * @private
+     * @param {boolean} lint
+     * @return {boolean}
      */
-    compileAll (lint)
+    async compileAll (lint)
     {
         this.logger.logBuildStart();
-        this.entries.forEach(entry => this.compiler.compile(entry, lint));
+
+        const hasLintErrors = await Promise.all(
+            this.entries.map(entry => this.compiler.compile(entry, lint))
+        );
+
+        return hasLintErrors.includes(true);
     }
 
 
@@ -98,7 +115,11 @@ class KabaScss
      */
     onChangedFile (file)
     {
-        this.compiler.lint(file);
+        if (this.config.lint)
+        {
+            this.compiler.lint(file);
+        }
+
         this.compileAll(false);
     }
 
@@ -140,10 +161,17 @@ class KabaScss
 
     /**
      * Runs the task
+     *
+     * @return {?boolean}
      */
-    run ()
+    async run ()
     {
-        this.compileAll(true);
+        const hasLintError = await this.compileAll(this.config.lint);
+
+        if (this.config.analyze)
+        {
+            return hasLintError;
+        }
 
         if (this.config.isWatch)
         {
@@ -160,6 +188,8 @@ class KabaScss
 
             watcher.add(this.getEntryDirGlobs());
         }
+
+        return null;
     }
 }
 

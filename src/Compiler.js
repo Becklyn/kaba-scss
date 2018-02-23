@@ -4,6 +4,7 @@ const path = require("path");
 const postcss = require("postcss");
 const sass = require("node-sass");
 const scssSyntax = require("postcss-scss");
+const stylelint = require("stylelint");
 const util = require("util");
 
 /**
@@ -20,6 +21,15 @@ const util = require("util");
  *      map: *,
  *      stats: NodeSassBuildStats,
  * }} NodeSassBuildResult
+ *
+ * @typedef {{
+ *      status: number,
+ *      file: string,
+ *      line: 11,
+ *      column: 33,
+ *      message: string,
+ *      formatted: string,
+ * }} NodeSassCompilationError
  */
 
 
@@ -76,17 +86,25 @@ class Compiler
      *
      * @param {KabaScssEntry} entry
      * @param {boolean} lint
+     * @return {?boolean}
      */
     async compile (entry, lint = true)
     {
         // start timer
         const start = process.hrtime();
+        let hasLintError = null;
 
         // read file content
         const fileContent = await util.promisify(fs.readFile)(entry.src, "utf-8");
 
         // compile sass
         const sassResult = await this.compileScss(entry, fileContent);
+
+        if (null === sassResult)
+        {
+            return;
+        }
+
         /** @type {string} css */
         let css = sassResult.css;
         /** @type {NodeSassBuildStats} stats */
@@ -96,9 +114,9 @@ class Compiler
         css = await this.postProcess(css, stats, entry);
 
         // if is debug = lint all files
-        if (this.config.isDebug && lint)
+        if (lint)
         {
-            this.lintAll([entry.src].concat(stats.includedFiles));
+            hasLintError = this.lintAll([entry.src]);
         }
 
         // minify
@@ -108,6 +126,7 @@ class Compiler
         await this.writeCssFile(css, entry);
 
         this.logger.logBuildSuccess(entry, stats, process.hrtime(start));
+        return hasLintError;
     }
 
 
@@ -117,7 +136,7 @@ class Compiler
      */
     async lint (filePath)
     {
-        return this.lintAll([filePath]);
+         this.lintAll([filePath]);
     }
 
 
@@ -126,27 +145,24 @@ class Compiler
      *
      * @private
      * @param {string[]} files
+     * @return {boolean}
      */
     async lintAll (files)
     {
-        return files.forEach(
-            async file => {
-                try
-                {
-                    const fileContent = await util.promisify(fs.readFile)(file, "utf-8");
+        /** @type {StylelintResult} outer */
+        const outer = await stylelint.lint({
+            configFile: require.resolve("kaba/.stylelintrc.yml"),
+            files: files,
+            formatter: "string",
+            cache: true,
+        });
 
-                    return await this.linter
-                        .process(fileContent, {
-                            from: file,
-                            syntax: scssSyntax,
-                        });
-                }
-                catch (error)
-                {
-                    this.logger.logPostCssError(file, error);
-                }
-            }
-        );
+        if (outer.output.length > 0)
+        {
+            console.log(outer.output);
+        }
+
+        return outer.errored;
     }
 
 
@@ -160,14 +176,22 @@ class Compiler
      */
     async compileScss (entry, fileContent)
     {
-        return util.promisify(sass.render)({
-            data: fileContent,
-            outputStyle: "compact",
-            sourceMapEmbed: this.config.includeSourceMaps,
-            includePaths: [
-                path.dirname(entry.src),
-            ],
-        });
+        try
+        {
+            return await util.promisify(sass.render)({
+                data: fileContent,
+                outputStyle: "compact",
+                sourceMapEmbed: this.config.includeSourceMaps,
+                includePaths: [
+                    path.dirname(entry.src),
+                ],
+            });
+        }
+        catch (error)
+        {
+            this.logger.logScssCompileError(error);
+            return null;
+        }
     }
 
 

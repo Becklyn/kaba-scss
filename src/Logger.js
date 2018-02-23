@@ -1,50 +1,12 @@
 const chalk = require("chalk");
-const path = require("path");
 const prettyHrTime = require("pretty-hrtime");
 const strftime = require('strftime');
 
+/**
+ * Logger for all kinds of messages
+ */
 class Logger
 {
-    constructor ()
-    {
-
-    }
-
-
-    /**
-     * @param {KabaScssEntry} entry
-     * @param {Error} error
-     */
-    logBuildError (entry, error)
-    {
-        this.writeLogMessage(chalk`{red Build Error}: ${error.message}`);
-    }
-
-
-    /**
-     *
-     * @param {KabaScssEntry} entry
-     * @param {Error} error
-     */
-    logFileReadError (entry, error)
-    {
-        const message = `File read failed for file ${path.basename(entry.src)}: ${error.message}`;
-        this.writeLogMessage(chalk`{red File Error}: ${message}`);
-    }
-
-
-    /**
-     *
-     * @param {KabaScssEntry} entry
-     * @param {Error} error
-     */
-    logFileWriteError (entry, error)
-    {
-        const message = `File write failed for file ${entry.outFileName}: ${error.message}`;
-        this.writeLogMessage(chalk`{red File Error}: ${message}`);
-    }
-
-
     /**
      * Logs the start of a build
      */
@@ -52,6 +14,7 @@ class Logger
     {
         this.writeLogMessage(chalk`{green Build started}`);
     }
+
 
     /**
      *
@@ -71,7 +34,22 @@ class Logger
      */
     logPostCssError (filePath, error)
     {
-        this.writeLogMessage(chalk`{red  PostCSS Error } in file ${filePath}: ${error.message}`);
+        this.writeLogMessage(chalk`{red PostCSS Error } in file ${filePath}: ${error.message}`);
+    }
+
+
+    /**
+     * Logs a node-sass compilation error
+     *
+     * @param {NodeSassCompilationError} error
+     */
+    logScssCompileError (error)
+    {
+        this.writeLogMessage(chalk`{red Compilation Error} in file {yellow ${error.file}} on line {yellow ${error.line}}:`);
+        console.log(`    ${error.message}`);
+        console.log("");
+        console.log(error.formatted.split("\n").splice(2).join("\n"));
+        console.log("");
     }
 
 
