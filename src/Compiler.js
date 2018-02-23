@@ -4,6 +4,7 @@ const path = require("path");
 const postcss = require("postcss");
 const sass = require("node-sass");
 const scssSyntax = require("postcss-scss");
+const util = require("util");
 
 /**
  * @typedef {{
@@ -47,8 +48,8 @@ class Compiler
          * @type {postcss.Processor}
          */
         this.linter = postcss([
-            require("stylelint", {
-
+            require("stylelint")({
+                configFile: require.resolve("kaba/.stylelintrc.yml"),
             }),
             require("postcss-reporter")({
                 clearReportedMessages: true,
@@ -61,7 +62,7 @@ class Compiler
          */
         this.postProcessor = postcss([
             require("autoprefixer")({
-
+                browsers: this.config.browserlist,
             }),
             require("postcss-reporter")({
                 clearReportedMessages: true,
@@ -71,29 +72,53 @@ class Compiler
 
 
     /**
+     * Compiles the given entry
+     *
      * @param {KabaScssEntry} entry
      */
-    compile (entry)
+    async compile (entry)
     {
-        fs.readFile(
-            entry.src,
-            'utf-8',
-            (error, contents) =>
-            {
-                if (error)
-                {
-                    this.logger.logFileReadError(error);
-                    return;
-                }
+        // start timer
+        const start = process.hrtime();
 
-                if (this.config.isDebug)
-                {
-                    this.lint(entry, contents);
-                }
+        // read file content
+        const fileContent = await util.promisify(fs.readFile)(entry.src, "utf-8");
 
-                this.compileScss(entry, contents);
-            }
-        );
+        // compile sass
+        const sassResult = await this.compileScss(entry, fileContent);
+        /** @type {string} css */
+        let css = sassResult.css;
+        /** @type {NodeSassBuildStats} stats */
+        const stats = sassResult.stats;
+
+        // run post processor
+        css = await this.postProcess(css, stats, entry);
+
+        // if is debug = lint all files
+        if (this.config.isDebug)
+        {
+            this.lintAll([entry.src].concat(stats.includedFiles), entry);
+        }
+
+        // minify
+        css = this.minifyCss(css);
+
+        // write output
+        await this.writeCssFile(css, entry);
+
+        this.logger.logBuildSuccess(entry, stats, process.hrtime(start));
+
+    }
+
+
+    /**
+     *
+     * @param {KabaScssEntry} entry
+     * @return {}
+     */
+    async lint (entry)
+    {
+        return this.lintAll([entry.src], entry);
     }
 
 
@@ -101,17 +126,29 @@ class Compiler
      * Lints the given CSS code
      *
      * @private
+     * @param {string[]} files
      * @param {KabaScssEntry} entry
-     * @param {string} fileContent
      */
-    lint (entry, fileContent)
+    async lintAll (files, entry)
     {
-        this.linter
-            .process(fileContent, {
-                from: entry.src,
-                syntax: scssSyntax,
-            })
-            .catch(error => this.logger.logPostCssError(entry, error));
+        return files.forEach(
+            async file => {
+                try
+                {
+                    const fileContent = await util.promisify(fs.readFile)(file, "utf-8");
+
+                    return await this.linter
+                        .process(fileContent, {
+                            from: file,
+                            syntax: scssSyntax,
+                        });
+                }
+                catch (error)
+                {
+                    this.logger.logPostCssError(entry, error);
+                }
+            }
+        );
     }
 
 
@@ -121,33 +158,18 @@ class Compiler
      * @private
      * @param {KabaScssEntry} entry
      * @param {string} fileContent
+     * @return {Promise<NodeSassBuildResult>}
      */
-    compileScss (entry, fileContent)
+    async compileScss (entry, fileContent)
     {
-        sass.render(
-            {
-                data: fileContent,
-                outputStyle: 'compact',
-                sourceMapEmbed: this.config.includeSourceMaps,
-                includePaths: [
-                    path.dirname(entry.src),
-                ],
-            },
-            /**
-             * @param {Error} error
-             * @param {NodeSassBuildResult} result
-             */
-            (error, result) =>
-            {
-                if (error)
-                {
-                    this.logger.logBuildError(entry, error);
-                    return;
-                }
-
-                this.postProcess(result.css, result.stats, entry);
-            }
-        );
+        return util.promisify(sass.render)({
+            data: fileContent,
+            outputStyle: "compact",
+            sourceMapEmbed: this.config.includeSourceMaps,
+            includePaths: [
+                path.dirname(entry.src),
+            ],
+        });
     }
 
 
@@ -159,9 +181,9 @@ class Compiler
      * @param {NodeSassBuildStats} stats
      * @param {KabaScssEntry} entry
      */
-    postProcess (css, stats, entry)
+    async postProcess (css, stats, entry)
     {
-        this.postProcessor
+        return this.postProcessor
             .process(css, {
                 from: entry.outFilePath,
             })
@@ -177,17 +199,12 @@ class Compiler
     /**
      * @private
      * @param {string} css
-     * @param {NodeSassBuildStats} stats
-     * @param {KabaScssEntry} entry
      */
-    minifyCss (css, stats, entry)
+    minifyCss (css)
     {
-        if (!this.config.isDebug)
-        {
-            css = csso.minify(css).css;
-        }
-
-        this.writeCssFile(css, stats, entry);
+        return !this.config.isDebug
+            ? csso.minify(css).css
+            : css;
     }
 
 
@@ -196,49 +213,15 @@ class Compiler
      *
      * @private
      * @param {string} css
-     * @param {NodeSassBuildStats} stats
      * @param {KabaScssEntry} entry
      */
-    writeCssFile (css, stats, entry)
+    async writeCssFile (css, entry)
     {
         // ensure that the output directory exists
-        fs.ensureDir(
-            entry.outDir,
-            error =>
-            {
-                if (error)
-                {
-                    this.logger.logFileWriteError(entry, error);
-                    return;
-                }
-
-                // write file
-                fs.writeFile(
-                    entry.outFilePath,
-                    css,
-                    error => this.afterFileWritten(error, stats, entry)
-                );
-            }
-        );
-    }
-
-
-    /**
-     *
-     * @private
-     * @param {Error} error
-     * @param {NodeSassBuildStats} stats
-     * @param {KabaScssEntry} entry
-     */
-    afterFileWritten (error, stats, entry)
-    {
-        if (error)
-        {
-            this.logger.logFileWriteError(entry, error);
-            return;
-        }
-
-        this.logger.logBuildSuccess(entry, stats);
+        return util.promisify(fs.ensureDir)(entry.outDir)
+            .then(
+                () => util.promisify(fs.writeFile)(entry.outFilePath, css)
+            );
     }
 }
 

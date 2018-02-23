@@ -1,4 +1,5 @@
 const path = require("path");
+const prettyHrTime = require("pretty-hrtime");
 
 class Logger
 {
@@ -44,10 +45,11 @@ class Logger
      *
      * @param {KabaScssEntry} entry
      * @param {NodeSassBuildStats} stats
+     * @param duration
      */
-    logBuildSuccess (entry, stats)
+    logBuildSuccess (entry, stats, duration)
     {
-        console.log(`Build finished: ${entry.outFileName} in ${stats.duration}ms`);
+        console.log(`Build finished: ${entry.outFileName} in ${prettyHrTime(duration)}`);
     }
 
 
