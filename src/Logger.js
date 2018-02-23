@@ -1,6 +1,4 @@
 const chalk = require("chalk");
-const prettyHrTime = require("pretty-hrtime");
-const strftime = require('strftime');
 
 /**
  * Logger for all kinds of messages
@@ -24,7 +22,7 @@ class Logger
      */
     logBuildSuccess (entry, stats, duration)
     {
-        this.writeLogMessage(chalk`{green Build finished}: {yellow ${entry.outFileName}} in ${prettyHrTime(duration)}`);
+        this.writeLogMessage(chalk`{green Build finished}: {yellow ${entry.outFileName}} in ${this.formatDuration(duration)}`);
     }
 
 
@@ -61,7 +59,49 @@ class Logger
      */
     writeLogMessage (message)
     {
-        console.log(chalk`{gray ${strftime('%H:%M:%S')}} {bgMagenta.black  SCSS } ${message}`);
+        console.log(chalk`{gray ${this.getCurrentTime()}} {bgMagenta.black  SCSS } ${message}`);
+    }
+
+
+    /**
+     * Returns the current time
+     *
+     * @private
+     * @return {string}
+     */
+    getCurrentTime ()
+    {
+        const now = new Date();
+
+        return `${this.padTime(now.getHours())}:${this.padTime(now.getMinutes())}:${this.padTime(now.getSeconds())}`;
+    }
+
+
+    /**
+     * Pads the time
+     *
+     * @private
+     * @param {number} time
+     * @return {string}
+     */
+    padTime (time)
+    {
+        return ("" + time).padStart(2, "0");
+    }
+
+
+    /**
+     * Formats the duration
+     *
+     * @private
+     * @param {number[]} duration
+     */
+    formatDuration (duration)
+    {
+        const [seconds, nanoseconds] = duration;
+        const milliseconds = Math.round(nanoseconds / 1000000);
+
+        return (seconds * 1000 + milliseconds) + " ms";
     }
 }
 
