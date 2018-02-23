@@ -15,6 +15,8 @@ const path = require("path");
  * @typedef {{
  *      isDebug: boolean,
  *      includeSourceMaps: boolean,
+ *      isWatch: boolean,
+ *      cwd: string,
  *      browserlist: string[],
  * }} KabaScssConfig
  */
@@ -56,6 +58,8 @@ class KabaScss
 
 
     /**
+     * Adds an entry point to compile
+     *
      * @param {string} src
      * @param {string} outDir
      */
@@ -79,9 +83,45 @@ class KabaScss
      *
      * @private
      */
-    compileAll ()
+    compileAll (lint)
     {
-        this.entries.forEach(entry => this.compiler.compile(entry));
+        this.logger.logBuildStart();
+        this.entries.forEach(entry => this.compiler.compile(entry, lint));
+    }
+
+
+    /**
+     * Callback on when a file has changed
+     *
+     * @private
+     * @param {string} file
+     */
+    onChangedFile (file)
+    {
+        this.compiler.lint(file);
+        this.compileAll(false);
+    }
+
+
+    /**
+     * Returns all entry dirs
+     *
+     * @private
+     * @return {string[]}
+     */
+    getEntryDirGlobs ()
+    {
+        const globs = {};
+
+        this.entries.forEach(
+            (entry) => {
+                const dir = path.dirname(entry.src);
+                const glob = `${dir}/**/*.scss`;
+                globs[glob] = true;
+            }
+        );
+
+        return Object.keys(globs);
     }
 
 
@@ -98,11 +138,28 @@ class KabaScss
     }
 
 
-
-
+    /**
+     * Runs the task
+     */
     run ()
     {
-        this.compileAll();
+        this.compileAll(true);
+
+        if (this.config.isWatch)
+        {
+            const watcher = chokidar.watch([],{
+                persistent: true,
+                cwd: this.config.cwd,
+                ignoreInitial: true,
+            });
+
+            watcher
+                .on("add", (path) => this.onChangedFile(path))
+                .on("change", (path) => this.onChangedFile(path))
+                .on("unlink", (path) => this.onChangedFile(path));
+
+            watcher.add(this.getEntryDirGlobs());
+        }
     }
 }
 

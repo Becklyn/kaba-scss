@@ -75,8 +75,9 @@ class Compiler
      * Compiles the given entry
      *
      * @param {KabaScssEntry} entry
+     * @param {boolean} lint
      */
-    async compile (entry)
+    async compile (entry, lint = true)
     {
         // start timer
         const start = process.hrtime();
@@ -95,9 +96,9 @@ class Compiler
         css = await this.postProcess(css, stats, entry);
 
         // if is debug = lint all files
-        if (this.config.isDebug)
+        if (this.config.isDebug && lint)
         {
-            this.lintAll([entry.src].concat(stats.includedFiles), entry);
+            this.lintAll([entry.src].concat(stats.includedFiles));
         }
 
         // minify
@@ -107,18 +108,16 @@ class Compiler
         await this.writeCssFile(css, entry);
 
         this.logger.logBuildSuccess(entry, stats, process.hrtime(start));
-
     }
 
 
     /**
      *
-     * @param {KabaScssEntry} entry
-     * @return {}
+     * @param {string} filePath
      */
-    async lint (entry)
+    async lint (filePath)
     {
-        return this.lintAll([entry.src], entry);
+        return this.lintAll([filePath]);
     }
 
 
@@ -127,9 +126,8 @@ class Compiler
      *
      * @private
      * @param {string[]} files
-     * @param {KabaScssEntry} entry
      */
-    async lintAll (files, entry)
+    async lintAll (files)
     {
         return files.forEach(
             async file => {
@@ -145,7 +143,7 @@ class Compiler
                 }
                 catch (error)
                 {
-                    this.logger.logPostCssError(entry, error);
+                    this.logger.logPostCssError(file, error);
                 }
             }
         );

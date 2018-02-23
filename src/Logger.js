@@ -1,5 +1,7 @@
+const chalk = require("chalk");
 const path = require("path");
 const prettyHrTime = require("pretty-hrtime");
+const strftime = require('strftime');
 
 class Logger
 {
@@ -15,7 +17,7 @@ class Logger
      */
     logBuildError (entry, error)
     {
-        console.error(error);
+        this.writeLogMessage(chalk`{red Build Error}: ${error.message}`);
     }
 
 
@@ -26,7 +28,8 @@ class Logger
      */
     logFileReadError (entry, error)
     {
-        console.error(`File read failed for file ${path.basename(entry.src)}: ${error.message}`);
+        const message = `File read failed for file ${path.basename(entry.src)}: ${error.message}`;
+        this.writeLogMessage(chalk`{red File Error}: ${message}`);
     }
 
 
@@ -37,9 +40,18 @@ class Logger
      */
     logFileWriteError (entry, error)
     {
-        console.error(`File write failed for file ${entry.outFileName}: ${error.message}`);
+        const message = `File write failed for file ${entry.outFileName}: ${error.message}`;
+        this.writeLogMessage(chalk`{red File Error}: ${message}`);
     }
 
+
+    /**
+     * Logs the start of a build
+     */
+    logBuildStart ()
+    {
+        this.writeLogMessage(chalk`{green Build started}`);
+    }
 
     /**
      *
@@ -49,17 +61,29 @@ class Logger
      */
     logBuildSuccess (entry, stats, duration)
     {
-        console.log(`Build finished: ${entry.outFileName} in ${prettyHrTime(duration)}`);
+        this.writeLogMessage(chalk`{green Build finished}: {yellow ${entry.outFileName}} in ${prettyHrTime(duration)}`);
     }
 
 
     /**
-     * @param {KabaScssEntry} entry
+     * @param {string} filePath
      * @param {Error} error
      */
-    logPostCssError (entry, error)
+    logPostCssError (filePath, error)
     {
-        console.error(`PostCSS failed for file ${entry.outFileName}: ${error.message}`);
+        this.writeLogMessage(chalk`{red  PostCSS Error } in file ${filePath}: ${error.message}`);
+    }
+
+
+    /**
+     * Writes a log message
+     *
+     * @private
+     * @param {string} message
+     */
+    writeLogMessage (message)
+    {
+        console.log(chalk`{gray ${strftime('%H:%M:%S')}} {bgMagenta.black  SCSS } ${message}`);
     }
 }
 
