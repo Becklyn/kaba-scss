@@ -1,6 +1,5 @@
 const chokidar = require("chokidar");
 const Compiler = require("./src/Compiler");
-const Logger = require("./src/Logger");
 const path = require("path");
 
 /**
@@ -38,8 +37,9 @@ class KabaScss
 {
     /**
      * @param {KabaScssConfig} config
+     * @param {Logger} logger
      */
-    constructor (config)
+    constructor (config, logger)
     {
         /**
          * @private
@@ -57,7 +57,7 @@ class KabaScss
          * @private
          * @type {Logger}
          */
-        this.logger = new Logger();
+        this.logger = logger;
 
         /**
          * @private
@@ -72,12 +72,17 @@ class KabaScss
      *
      * @param {string} src
      * @param {string} outDir
+     * @param {?string} outFileName
      */
-    addEntry (src, outDir)
+    addEntry (src, outDir, outFileName = null)
     {
         // remove trailing slash
         outDir = outDir.replace(/\/+$/, "");
-        const outFileName = this.generateOutputFileName(src);
+
+        if (null === outFileName)
+        {
+            outFileName = this.generateOutputFileName(src);
+        }
 
         this.entries.push({
             src: src,

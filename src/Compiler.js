@@ -118,7 +118,7 @@ class Compiler
         // write output
         await this.writeCssFile(css, entry);
 
-        this.logger.logBuildSuccess(entry, stats, process.hrtime(start));
+        this.logger.logBuildSuccess(path.basename(entry.src), process.hrtime(start));
         return hasLintError;
     }
 
@@ -182,7 +182,7 @@ class Compiler
         }
         catch (error)
         {
-            this.logger.logScssCompileError(error);
+            this.logger.logCompileError(error);
             return null;
         }
     }
@@ -206,7 +206,7 @@ class Compiler
                 result => this.minifyCss(result.css, stats, entry)
             )
             .catch(
-                error => this.logger.logPostCssError(entry, error)
+                error => this.logger.log(chalk`{red PostCSS Error} in file {yellow ${path.basename(entry.src)}}: ${error.message}`)
             );
     }
 
