@@ -19,6 +19,7 @@ const path = require("path");
  *      analyze: boolean,
  *      cwd: string,
  *      browserlist: string[],
+ *      fix: boolean,
  * }} KabaScssConfig
  *
  *

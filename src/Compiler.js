@@ -148,6 +148,7 @@ class Compiler
             files: files,
             formatter: "string",
             cache: true,
+            fix: this.config.fix,
         });
 
         if (outer.output.length > 0)
