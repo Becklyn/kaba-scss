@@ -65,7 +65,7 @@ class Compiler
          */
         this.postProcessor = postcss([
             require("autoprefixer")({
-                browsers: this.config.browserlist,
+                browsers: this.config.browserList,
             }),
             require("postcss-reporter")({
                 clearReportedMessages: true,
