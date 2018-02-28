@@ -107,7 +107,7 @@ class Compiler
         css = await this.postProcess(css, stats, entry);
 
         // if is debug = lint all files
-        if (lint)
+        if (lint || this.config.fix)
         {
             hasLintError = this.lintAll([entry.src]);
         }
