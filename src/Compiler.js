@@ -189,6 +189,7 @@ class Compiler
                 includePaths: [
                     path.dirname(entry.src),
                 ],
+                importer: (url) => this.resolveImport(url),
             });
         }
         catch (error)
@@ -248,6 +249,39 @@ class Compiler
             .then(
                 () => util.promisify(fs.writeFile)(entry.outFilePath, css)
             );
+    }
+
+
+    /**
+     * Resolves sass imports
+     *
+     * @private
+     * @param {string} url
+     * @return {{file : string}}
+     */
+    resolveImport (url)
+    {
+        if (url[0] === "~")
+        {
+            const extensions = [".scss", ".css", ""];
+
+            for (let i = 0; i < extensions.length; i++)
+            {
+                try
+                {
+                    url = require.resolve(`${url.substr(1)}${extensions[i]}`);
+                    break;
+                }
+                catch (e)
+                {
+                    // ignore
+                }
+            }
+        }
+
+        return {
+            file: url,
+        };
     }
 }
 
