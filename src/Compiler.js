@@ -109,7 +109,7 @@ class Compiler
         // if is debug = lint all files
         if (lint || this.config.fix)
         {
-            hasLintError = this.lintAll([entry.src]);
+            hasLintError = this.lintAll([entry.src].concat(stats.includedFiles));
         }
 
         // minify
