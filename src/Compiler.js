@@ -124,12 +124,13 @@ class Compiler
 
 
     /**
+     * Lints the given file
      *
      * @param {string} filePath
      */
     async lint (filePath)
     {
-         this.lintAll([filePath]);
+        this.lintAll([filePath]);
     }
 
 
