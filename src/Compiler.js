@@ -139,10 +139,19 @@ class Compiler
      *
      * @private
      * @param {string[]} files
-     * @return {boolean}
+     * @return {boolean} whether it has a lint error
      */
     async lintAll (files)
     {
+        files = files.filter(
+            filePath => !/\/(node_modules|vendor)\//.test(filePath)
+        );
+
+        if (files.length === 0)
+        {
+            return false;
+        }
+
         /** @type {StylelintResult} outer */
         const outer = await stylelint.lint({
             configFile: this.stylelintConfigFile,
