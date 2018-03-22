@@ -1,5 +1,6 @@
 const chokidar = require("chokidar");
 const Compiler = require("./src/Compiler");
+const fs = require("fs-extra");
 const path = require("path");
 
 /**
@@ -111,11 +112,34 @@ class KabaScss
     {
         this.logger.logBuildStart();
 
+        this.removeAllOutDirs();
+
         const hasLintErrors = await Promise.all(
             this.entries.map(entry => this.compiler.compile(entry, lint))
         );
 
         return hasLintErrors.includes(true);
+    }
+
+
+    /**
+     * Remove all out dirs
+     *
+     * @private
+     */
+    removeAllOutDirs ()
+    {
+        const outDirs = {};
+
+        Object.values(this.entries).forEach(
+            entry => {
+                outDirs[entry.outDir] = true;
+            }
+        );
+
+        Object.keys(outDirs).forEach(
+            dir => fs.removeSync(dir)
+        );
     }
 
 
