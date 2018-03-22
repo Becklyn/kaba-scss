@@ -65,6 +65,12 @@ class KabaScss
          * @type {Compiler}
          */
         this.compiler = new Compiler(config, this.logger);
+
+        /**
+         * @private
+         * @type {?FSWatcher}
+         */
+        this.watcher = null;
     }
 
 
@@ -181,21 +187,37 @@ class KabaScss
 
         if (this.config.isWatch)
         {
-            const watcher = chokidar.watch([],{
+            this.watcher = chokidar.watch([],{
                 persistent: true,
                 cwd: this.config.cwd,
                 ignoreInitial: true,
             });
 
-            watcher
+            this.watcher
                 .on("add", (path) => this.onChangedFile(path))
                 .on("change", (path) => this.onChangedFile(path))
                 .on("unlink", (path) => this.onChangedFile(path));
 
-            watcher.add(this.getEntryDirGlobs());
+            this.watcher.add(this.getEntryDirGlobs());
         }
 
         return null;
+    }
+
+
+    /**
+     * Stops the watcher
+     *
+     * @returns {boolean}
+     */
+    stop ()
+    {
+        if (this.watcher !== null)
+        {
+            this.watcher.close();
+        }
+
+        return true;
     }
 }
 
