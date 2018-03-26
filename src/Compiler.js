@@ -1,3 +1,4 @@
+const chalk = require("chalk");
 const csso = require("csso");
 const fs = require("fs-extra");
 const path = require("path");
@@ -86,9 +87,30 @@ class Compiler
         // start timer
         const start = process.hrtime();
         let hasLintError = null;
+        let fileContent = "";
 
-        // read file content
-        const fileContent = await util.promisify(fs.readFile)(entry.src, "utf-8");
+        try
+        {
+            // read file content
+            fileContent = await util.promisify(fs.readFile)(entry.src, "utf-8");
+        }
+        catch (e)
+        {
+            if ("ENOENT" === e.code)
+            {
+                this.logger.log(chalk`{yellow SKIPPED} build of {yellow ${path.relative(this.config.cwd, entry.src)}} as file was not found`);
+
+            }
+            else
+            {
+                this.logger.logError("File load error", {
+                    message: e.toString()
+                });
+            }
+
+            return true;
+        }
+
 
         // compile sass
         const sassResult = await this.compileScss(entry, fileContent);
