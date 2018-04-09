@@ -20,9 +20,6 @@
         "postcss-reporter": "^5.0.0",
         "stylelint": "^9.1.1"
     },
-    "peerDependencies": {
-        "kaba": "^4.0.2"
-    },
     "engines": {
         "node": ">=8.0"
     }
