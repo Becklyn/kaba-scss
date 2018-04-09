@@ -106,7 +106,7 @@ class KabaScss
      *
      * @private
      * @param {boolean} lint
-     * @return {boolean}
+     * @return {boolean} whether there were any lint errors
      */
     async compileAll (lint)
     {
@@ -198,7 +198,7 @@ class KabaScss
     /**
      * Runs the task
      *
-     * @return {?boolean}
+     * @return {?boolean} whether the build complete without any issues
      */
     async run ()
     {
@@ -206,7 +206,7 @@ class KabaScss
 
         if (this.config.analyze)
         {
-            return hasLintError;
+            return !hasLintError;
         }
 
         if (this.config.isWatch)
