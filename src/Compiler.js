@@ -285,18 +285,35 @@ class Compiler
     {
         if (url[0] === "~")
         {
-            const extensions = [".scss", ".css", ""];
+            // map of file extensions and whether the file should be directly loaded or just as path returned
+            const extensions = {
+                ".scss": false,
+                ".css": true,
+                "": false,
+            };
 
-            for (let i = 0; i < extensions.length; i++)
+            for (const extension in extensions)
             {
-                try
-                {
-                    url = require.resolve(`${url.substr(1)}${extensions[i]}`);
-                    break;
+                try {
+                    const loadFileContent = extensions[extension];
+                    const filePath = require.resolve(`${url.substr(1)}${extension}`);
+
+                    if (loadFileContent)
+                    {
+                        return {
+                            contents: fs.readFileSync(filePath, "utf-8"),
+                        };
+                    }
+                    else
+                    {
+                        return {
+                            file: require.resolve(`${url.substr(1)}.scss`),
+                        };
+                    }
                 }
                 catch (e)
                 {
-                    // ignore
+                    // ignore error
                 }
             }
         }
