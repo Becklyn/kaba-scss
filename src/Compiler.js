@@ -4,7 +4,6 @@ const fs = require("fs-extra");
 const path = require("path");
 const postcss = require("postcss");
 const sass = require("node-sass");
-const scssSyntax = require("postcss-scss");
 const stylelint = require("stylelint");
 const util = require("util");
 
