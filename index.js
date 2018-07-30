@@ -69,9 +69,9 @@ class KabaScss
 
         /**
          * @private
-         * @type {?FSWatcher}
+         * @type {?Promise}
          */
-        this.watcher = null;
+        this.finishedResolve = null;
     }
 
 
@@ -211,18 +211,20 @@ class KabaScss
 
         if (this.config.isWatch)
         {
-            this.watcher = chokidar.watch([],{
+            const watcher = chokidar.watch([],{
                 persistent: true,
                 cwd: this.config.cwd,
                 ignoreInitial: true,
             });
 
-            this.watcher
+            watcher
                 .on("add", (path) => this.onChangedFile(path))
                 .on("change", (path) => this.onChangedFile(path))
-                .on("unlink", (path) => this.onChangedFile(path));
+                .on("unlink", (path) => this.onChangedFile(path))
+                .add(this.getEntryDirGlobs());
 
-            this.watcher.add(this.getEntryDirGlobs());
+            return new Promise(resolve => this.finishedResolve = resolve)
+                .then(() => watcher.close());
         }
 
         return null;
@@ -236,9 +238,9 @@ class KabaScss
      */
     stop ()
     {
-        if (this.watcher !== null)
+        if (this.finishedResolve !== null)
         {
-            this.watcher.close();
+            this.finishedResolve();
         }
 
         return true;
