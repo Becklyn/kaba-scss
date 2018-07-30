@@ -57,7 +57,7 @@ class Compiler
          * @private
          * @type {String}
          */
-        this.stylelintConfigFile = path(__dirname, "../.stylelintrc.yml");
+        this.stylelintConfigFile = path.join(__dirname, "../.stylelintrc.yml");
 
         /**
          * @private
