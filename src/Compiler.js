@@ -57,7 +57,7 @@ class Compiler
          * @private
          * @type {String}
          */
-        this.stylelintConfigFile = require.resolve("kaba/.stylelintrc.yml");
+        this.stylelintConfigFile = path(__dirname, "../.stylelintrc.yml");
 
         /**
          * @private
