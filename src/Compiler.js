@@ -1,6 +1,6 @@
-const chalk = require("chalk");
 const csso = require("csso");
 const fs = require("fs-extra");
+const kleur = require("kleur");
 const path = require("path");
 const postcss = require("postcss");
 const sass = require("node-sass");
@@ -97,7 +97,7 @@ class Compiler
         {
             if ("ENOENT" === e.code)
             {
-                this.logger.log(chalk`{yellow SKIPPED} build of {yellow ${path.relative(this.config.cwd, entry.src)}} as file was not found`);
+                this.logger.log(`${kleur.yellow("SKIPPED")} build of ${kleur.yellow(path.relative(this.config.cwd, entry.src))} as file was not found`);
 
             }
             else
@@ -239,7 +239,7 @@ class Compiler
                 result => this.minifyCss(result.css, stats, entry)
             )
             .catch(
-                error => this.logger.log(chalk`{red PostCSS Error} in file {yellow ${path.basename(entry.src)}}: ${error.message}`)
+                error => this.logger.log(`${kleur.red("PostCSS Error")} in file ${kleur.yellow(path.basename(entry.src))}: ${error.message}`)
             );
     }
 
