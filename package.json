@@ -1,6 +1,6 @@
 {
     "name": "kaba-scss",
-    "version": "1.1.8",
+    "version": "1.1.9",
     "description": "A small and fast SCSS builder for kaba.",
     "repository": {
         "type": "git",
