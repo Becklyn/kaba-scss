@@ -105,6 +105,8 @@ rules:
         - except:
             - "after-single-line-comment"
             - "first-nested"
+          ignore:
+            - "after-comment"
 
     # Media feature
     media-feature-colon-space-after: always
