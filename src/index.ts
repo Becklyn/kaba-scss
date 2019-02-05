@@ -27,7 +27,7 @@ export interface CompilationEntry
     mapFilePath: string;
 }
 
-interface UniqueKeyMap
+export interface UniqueKeyMap
 {
     [key: string]: boolean;
 }
