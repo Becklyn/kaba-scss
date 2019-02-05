@@ -8,7 +8,7 @@ const fs = require("fs-extra");
 const path = require("path");
 // @ts-ignore
 const postcss = require("postcss");
-const sass = require("sass");
+const sass = require("node-sass");
 const stylelint = require("stylelint");
 
 
@@ -16,6 +16,19 @@ interface CompiledCss
 {
     map: SourceMapGenerator,
     css: string;
+}
+
+interface NodeSassResult
+{
+    css: Buffer;
+    map: Buffer;
+    stats: {
+        entry: string;
+        start: number;
+        includedFiles: string[];
+        end: number;
+        duration: number;
+    };
 }
 
 
@@ -85,7 +98,6 @@ export class Compiler
         }
         catch (e)
         {
-            e.formatted = null;
             this.logger.logCompileError(e);
             return true;
         }
@@ -158,19 +170,35 @@ export class Compiler
     /**
      * Compiles the code to CSS
      */
-    private async compileScss (entry: CompilationEntry, fileContent: string): Promise<Result>
+    private async compileScss (entry: CompilationEntry, fileContent: string): Promise<NodeSassResult>
     {
-        return sass.renderSync({
-            data: fileContent,
-            file: entry.src,
-            outFile: entry.outFilePath,
-            sourceMap: true,
-            includePaths: [
-                path.dirname(entry.src),
-            ],
-            outputStyle: "compressed",
-            importer: (url: string) => this.resolveImport(url),
-        });
+        return new Promise(
+            (resolve, reject) =>
+            {
+                sass.render(
+                    {
+                        data: fileContent,
+                        file: entry.src,
+                        outFile: entry.outFilePath,
+                        sourceMap: true,
+                        includePaths: [
+                            path.dirname(entry.src),
+                        ],
+                        outputStyle: "compressed",
+                        importer: (url: string) => this.resolveImport(url),
+                    },
+                    (error: Error|undefined, result: NodeSassResult) =>
+                    {
+                        if (error)
+                        {
+                            return reject(error);
+                        }
+
+                        resolve(result);
+                    }
+                );
+            }
+        );
     }
 
 
