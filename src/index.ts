@@ -1,4 +1,6 @@
 import {Compiler} from "./Compiler";
+import {PrefixedLogger} from "./PrefixedLogger";
+const {bgMagenta, white} = require("kleur");
 const chokidar = require("chokidar");
 const fs = require("fs-extra");
 const path = require("path");
@@ -12,14 +14,6 @@ export interface KabaScssOptions
     fix: boolean;
     cwd: string;
     browserList: string[];
-}
-
-export interface LoggerInterface
-{
-    logBuildStart(): void;
-    log(message: string): void;
-    logError(message: string, context?: {[name: string]: any}): void;
-    logBuildSuccess(file: string, duration: [number, number]): void;
 }
 
 export interface CompilationEntry
@@ -44,7 +38,7 @@ interface UniqueKeyMap
 export class KabaScss
 {
     private options: KabaScssOptions;
-    private logger: LoggerInterface;
+    private logger: PrefixedLogger;
     private entries: CompilationEntry[] = [];
     private finishedResolve: (() => void)|null = null;
     private compiler: Compiler;
@@ -52,7 +46,7 @@ export class KabaScss
     /**
      *
      */
-    public constructor (options: Partial<KabaScssOptions>, logger: LoggerInterface)
+    public constructor (options: Partial<KabaScssOptions>, logger: PrefixedLogger|null)
     {
         this.options = Object.assign({
             debug: false,
@@ -63,7 +57,7 @@ export class KabaScss
             browserList: ["last 2 versions", "IE 11"],
         }, options) as KabaScssOptions;
 
-        this.logger = logger;
+        this.logger = logger || new PrefixedLogger(bgMagenta(white(" SCSS ")), this.options.cwd);
         this.compiler = new Compiler(this.options, this.logger);
     }
 
