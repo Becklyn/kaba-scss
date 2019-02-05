@@ -1,18 +1,35 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const { red, yellow } = require("kleur");
-const csso = require("csso");
+import {Result} from "sass";
+import {SourceMapGenerator} from "source-map";
+import {CompilationEntry, KabaScssOptions, LoggerInterface} from "./index";
+
+const {red, yellow} = require("kleur");
 const fs = require("fs-extra");
 const path = require("path");
 // @ts-ignore
 const postcss = require("postcss");
 const sass = require("sass");
 const stylelint = require("stylelint");
-class Compiler {
+
+
+interface CompiledCss
+{
+    map: SourceMapGenerator,
+    css: string;
+}
+
+
+export class Compiler
+{
+    private options: KabaScssOptions;
+    private logger: LoggerInterface;
+    private stylelintConfigFile: string;
+    private postProcessor: any;
+
     /**
      *
      */
-    constructor(options, logger) {
+    public constructor (options: KabaScssOptions, logger: LoggerInterface)
+    {
         this.options = options;
         this.logger = logger;
         this.stylelintConfigFile = path.join(__dirname, "../.stylelintrc.yml");
@@ -25,78 +42,114 @@ class Compiler {
             }),
         ]);
     }
+
+
     /**
      * Compiles the given entry
      *
      */
-    async compile(entry, lint = true) {
+    public async compile (entry: CompilationEntry, lint: boolean = true) : Promise<boolean>
+    {
         // start timer
-        const start = process.hrtime();
+        let start = process.hrtime();
         let fileContent = "";
-        try {
+
+        try
+        {
             // read file content
             fileContent = await fs.readFile(entry.src, "utf-8");
         }
-        catch (e) {
-            if ("ENOENT" === e.code) {
+        catch (e)
+        {
+            if ("ENOENT" === e.code)
+            {
                 this.logger.log(`${yellow("SKIPPED")} build of ${yellow(entry.relativeSrc)} as file was not found`);
+
             }
-            else {
+            else
+            {
                 this.logger.logError("File load error", {
                     message: e.toString()
                 });
             }
+
             return true;
         }
+
         let sassResult = null;
+
+
         // compile sass
-        try {
+        try
+        {
             sassResult = await this.compileScss(entry, fileContent);
         }
-        catch (e) {
+        catch (e)
+        {
             this.logger.logError(e.message);
             return true;
         }
+
         let compiled = await this.postProcess(sassResult, entry);
+
         // always lint, as we need the info whether there are errors
         let hasLintError = await this.lintAll([entry.src].concat(sassResult.stats.includedFiles), lint);
+
         // write output
         await this.writeFiles(compiled.css, compiled.map, entry);
+
         this.logger.logBuildSuccess(entry.basename, process.hrtime(start));
         return hasLintError;
     }
+
+
     /**
      * Lints the given file
      */
-    async lint(filePath, printResults = true) {
+    public async lint (filePath: string, printResults: boolean = true) : Promise<boolean>
+    {
         return this.lintAll([filePath], printResults);
     }
+
+
     /**
      * Lints the given CSS code.
      *
      * Returns whether there were any lint errors
      */
-    async lintAll(files, printResults = true) {
-        files = files.filter(filePath => !/\/(node_modules|vendor)\//.test(filePath));
-        if (files.length === 0) {
+    private async lintAll (files: string[], printResults: boolean = true) : Promise<boolean>
+    {
+        files = files.filter(
+            filePath => !/\/(node_modules|vendor)\//.test(filePath)
+        );
+
+        if (files.length === 0)
+        {
             return false;
         }
-        const outer = await stylelint.lint({
+
+        let outer = await stylelint.lint({
             configFile: this.stylelintConfigFile,
             files: files,
             formatter: "string",
             cache: true,
             fix: this.options.fix,
         });
-        if (printResults && "" !== outer.output) {
+
+        if (printResults && "" !== outer.output)
+        {
             console.log(outer.output);
         }
+
         return outer.errored;
     }
+
+
     /**
      * Compiles the code to CSS
      */
-    async compileScss(entry, fileContent) {
+    private async compileScss (entry: CompilationEntry, fileContent: string): Promise<Result>
+    {
         return sass.renderSync({
             data: fileContent,
             file: entry.src,
@@ -106,73 +159,94 @@ class Compiler {
                 path.dirname(entry.src),
             ],
             outputStyle: "compressed",
-            importer: (url) => this.resolveImport(url),
+            importer: (url: string) => this.resolveImport(url),
         });
     }
+
+
     /**
      * Handles the post processing
      */
-    async postProcess(css, entry) {
-        try {
+    private async postProcess (css: Result, entry: CompilationEntry) : Promise<CompiledCss>
+    {
+        try
+        {
             return await this.postProcessor.process(css.css, {
                 from: entry.src,
                 to: entry.outFilePath,
                 map: {
-                    annotation: false,
+                    annotation: false, //this.options.debug,
                     inline: false,
-                    prev: css.map.toString(),
+                    prev: (css.map as Buffer).toString(),
                 }
-            });
+            }) as CompiledCss;
         }
-        catch (error) {
+        catch (error)
+        {
             this.logger.log(`${red("PostCSS Error")} in file ${yellow(entry.basename)}: ${error.message}`);
             throw error;
         }
     }
+
+
     /**
      * Writes the output css file
      */
-    async writeFiles(css, sourceMap, entry) {
+    private async writeFiles (css: string, sourceMap: SourceMapGenerator, entry: CompilationEntry): Promise<void>
+    {
         return fs.ensureDir(entry.outDir)
-            .then(() => {
-            fs.writeFile(entry.outFilePath, css);
-            fs.writeFile(entry.mapFilePath, sourceMap.toString());
-        });
+            .then(
+                () =>
+                {
+                    fs.writeFile(entry.outFilePath, css);
+                    fs.writeFile(entry.mapFilePath, sourceMap.toString());
+                }
+            );
     }
+
+
     /**
      * Resolves sass imports
      */
-    resolveImport(url) {
-        if (url[0] === "~") {
+    private resolveImport (url: string): {file: string}|{contents: string}
+    {
+        if (url[0] === "~")
+        {
             // map of file extensions and whether the file should be directly loaded or just as path returned
-            const extensions = {
+            let extensions: {[extension: string]: boolean} = {
                 ".scss": false,
                 ".css": true,
                 "": false,
             };
-            for (const extension in extensions) {
+
+            for (let extension in extensions)
+            {
                 try {
-                    const loadFileContent = extensions[extension];
-                    const filePath = require.resolve(`${url.substr(1)}${extension}`);
-                    if (loadFileContent) {
+                    let loadFileContent = extensions[extension];
+                    let filePath = require.resolve(`${url.substr(1)}${extension}`);
+
+                    if (loadFileContent)
+                    {
                         return {
                             contents: fs.readFileSync(filePath, "utf-8"),
                         };
                     }
-                    else {
+                    else
+                    {
                         return {
                             file: filePath,
                         };
                     }
                 }
-                catch (e) {
+                catch (e)
+                {
                     // ignore error
                 }
             }
         }
+
         return {
             file: url,
         };
     }
 }
-exports.Compiler = Compiler;
