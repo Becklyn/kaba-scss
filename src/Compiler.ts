@@ -1,6 +1,6 @@
 import {Result} from "sass";
 import {SourceMapGenerator} from "source-map";
-import {CompilationEntry, KabaScssOptions} from "./index";
+import {CompilationEntry, KabaScssOptions, UniqueKeyMap} from "./index";
 import {PrefixedLogger} from "./PrefixedLogger";
 
 const {red, yellow} = require("kleur");
@@ -119,18 +119,28 @@ export class Compiler
      */
     private async lintAll (files: string[], printResults: boolean = true) : Promise<boolean>
     {
-        files = files.filter(
-            filePath => !/\/(node_modules|vendor)\//.test(filePath)
+        let filesToLintMap: UniqueKeyMap = {};
+
+        files.forEach(
+            filePath =>
+            {
+                if (filePath[0] !== "~" && !/\/(node_modules|vendor)\//.test(filePath))
+                {
+                    filesToLintMap[filePath] = true;
+                }
+            }
         );
 
-        if (files.length === 0)
+        let filesToLint = Object.keys(filesToLintMap);
+
+        if (filesToLint.length === 0)
         {
             return false;
         }
 
         let outer = await stylelint.lint({
             configFile: this.stylelintConfigFile,
-            files: files,
+            files: filesToLint,
             formatter: "string",
             cache: true,
             fix: this.options.fix,
