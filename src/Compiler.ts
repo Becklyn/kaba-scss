@@ -1,8 +1,9 @@
-import {SourceMapGenerator} from "source-map";
+import {SourceMapGenerator, SourceMapConsumer} from "source-map";
 import {CompilationEntry, KabaScssOptions, UniqueKeyMap} from "./index";
 import {PrefixedLogger} from "./PrefixedLogger";
 
 const {red, yellow} = require("kleur");
+const csso = require("csso");
 const fs = require("fs-extra");
 const path = require("path");
 // @ts-ignore
@@ -103,13 +104,28 @@ export class Compiler
             return true;
         }
 
-        let compiled = await this.postProcess(sassResult, entry);
+        let result = await this.postProcess(sassResult, entry);
 
         // always lint, as we need the info whether there are errors
         let hasLintError = await this.lintAll([entry.src].concat(sassResult.stats.includedFiles), lint);
 
+        if (!this.options.debug)
+        {
+            let minified = csso.minify(result.css, {
+                filename: entry.src,
+                sourceMap: true,
+            });
+
+            minified.map.applySourceMap(
+                await SourceMapConsumer.fromSourceMap(result.map),
+                entry.src
+            );
+
+            result = minified;
+        }
+
         // write output
-        await this.writeFiles(compiled.css, compiled.map, entry);
+        await this.writeFiles(result.css, result.map, entry);
 
         this.logger.logBuildSuccess(entry.basename, process.hrtime(start));
         return hasLintError;
