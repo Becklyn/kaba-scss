@@ -10,7 +10,6 @@ const postcss = require("postcss");
 const sass = require("node-sass");
 const stylelint = require("stylelint");
 
-
 interface CompilationResult
 {
     css: Buffer;
@@ -29,6 +28,7 @@ interface PostProcessingResult
     map: SourceMapGenerator,
     css: string;
 }
+
 
 /**
  * Compiles the given files
@@ -89,7 +89,7 @@ export class Compiler
             return true;
         }
 
-        let sassResult = null;
+        let sassResult;
 
 
         // compile sass
@@ -134,15 +134,13 @@ export class Compiler
     {
         let filesToLintMap: UniqueKeyMap = {};
 
-        files.forEach(
-            filePath =>
+        files.forEach(filePath =>
+        {
+            if (filePath[0] !== "~" && !/\/(node_modules|vendor)\//.test(filePath))
             {
-                if (filePath[0] !== "~" && !/\/(node_modules|vendor)\//.test(filePath))
-                {
-                    filesToLintMap[filePath] = true;
-                }
+                filesToLintMap[filePath] = true;
             }
-        );
+        });
 
         let filesToLint = Object.keys(filesToLintMap);
 
@@ -217,7 +215,7 @@ export class Compiler
                     annotation: false, //this.options.debug,
                     inline: false,
                     prev: css.map.toString(),
-                }
+                },
             }) as PostProcessingResult;
         }
         catch (error)
