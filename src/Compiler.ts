@@ -12,13 +12,7 @@ const sass = require("node-sass");
 const stylelint = require("stylelint");
 
 
-interface CompiledCss
-{
-    map: SourceMapGenerator,
-    css: string;
-}
-
-interface NodeSassResult
+interface CompilationResult
 {
     css: Buffer;
     map: Buffer;
@@ -31,7 +25,15 @@ interface NodeSassResult
     };
 }
 
+interface PostProcessingResult
+{
+    map: SourceMapGenerator,
+    css: string;
+}
 
+/**
+ * Compiles the given files
+ */
 export class Compiler
 {
     private options: KabaScssOptions;
@@ -170,7 +172,7 @@ export class Compiler
     /**
      * Compiles the code to CSS
      */
-    private async compileScss (entry: CompilationEntry, fileContent: string): Promise<NodeSassResult>
+    private async compileScss (entry: CompilationEntry, fileContent: string): Promise<CompilationResult>
     {
         return new Promise(
             (resolve, reject) =>
@@ -187,7 +189,7 @@ export class Compiler
                         outputStyle: "compressed",
                         importer: (url: string) => this.resolveImport(url),
                     },
-                    (error: Error|undefined, result: NodeSassResult) =>
+                    (error: Error|undefined, result: CompilationResult) =>
                     {
                         if (error)
                         {
@@ -205,7 +207,7 @@ export class Compiler
     /**
      * Handles the post processing
      */
-    private async postProcess (css: Result, entry: CompilationEntry) : Promise<CompiledCss>
+    private async postProcess (css: CompilationResult, entry: CompilationEntry) : Promise<PostProcessingResult>
     {
         try
         {
@@ -215,9 +217,9 @@ export class Compiler
                 map: {
                     annotation: false, //this.options.debug,
                     inline: false,
-                    prev: (css.map as Buffer).toString(),
+                    prev: css.map.toString(),
                 }
-            }) as CompiledCss;
+            }) as PostProcessingResult;
         }
         catch (error)
         {
