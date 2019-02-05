@@ -1,0 +1,10 @@
+.DS_Store
+/.idea
+/.vscode
+/.github
+/tsconfig.json
+
+# ignore all .ts when publishing
+*.ts
+*.tsx
+!@types/*.d.ts
