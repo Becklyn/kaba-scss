@@ -1,6 +1,7 @@
 import {Result} from "sass";
 import {SourceMapGenerator} from "source-map";
-import {CompilationEntry, KabaScssOptions, LoggerInterface} from "./index";
+import {CompilationEntry, KabaScssOptions} from "./index";
+import {PrefixedLogger} from "./PrefixedLogger";
 
 const {red, yellow} = require("kleur");
 const fs = require("fs-extra");
@@ -21,14 +22,14 @@ interface CompiledCss
 export class Compiler
 {
     private options: KabaScssOptions;
-    private logger: LoggerInterface;
+    private logger: PrefixedLogger;
     private stylelintConfigFile: string;
     private postProcessor: any;
 
     /**
      *
      */
-    public constructor (options: KabaScssOptions, logger: LoggerInterface)
+    public constructor (options: KabaScssOptions, logger: PrefixedLogger)
     {
         this.options = options;
         this.logger = logger;
@@ -68,9 +69,7 @@ export class Compiler
             }
             else
             {
-                this.logger.logError("File load error", {
-                    message: e.toString()
-                });
+                this.logger.logError("File load error", e);
             }
 
             return true;
@@ -86,7 +85,8 @@ export class Compiler
         }
         catch (e)
         {
-            this.logger.logError(e.message);
+            e.formatted = null;
+            this.logger.logCompileError(e);
             return true;
         }
 
@@ -138,7 +138,7 @@ export class Compiler
 
         if (printResults && "" !== outer.output)
         {
-            console.log(outer.output);
+            this.logger.logToolOutput(`Found ${outer.postcssResults.length} Stylelint issues:`, outer.output);
         }
 
         return outer.errored;
