@@ -1,4 +1,3 @@
-import {Result} from "sass";
 import {SourceMapGenerator} from "source-map";
 import {CompilationEntry, KabaScssOptions, UniqueKeyMap} from "./index";
 import {PrefixedLogger} from "./PrefixedLogger";
