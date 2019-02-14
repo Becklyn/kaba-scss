@@ -228,7 +228,7 @@ export class Compiler
                 from: entry.src,
                 to: entry.outFilePath,
                 map: {
-                    annotation: false, //this.options.debug,
+                    annotation: this.options.debug,
                     inline: false,
                     prev: css.map.toString(),
                 },
