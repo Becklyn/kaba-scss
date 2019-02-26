@@ -93,6 +93,7 @@ rules:
     selector-pseudo-element-no-unknown: true
     selector-type-case: lower
     selector-max-empty-lines: 0
+    selector-max-type: 0
 
     # Selector list
     selector-list-comma-newline-after: always
