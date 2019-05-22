@@ -5,3 +5,4 @@
 # ignore build files
 *.d.ts
 *.js
+!/src/@types/*.d.ts

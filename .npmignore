@@ -7,4 +7,4 @@
 # ignore all .ts when publishing
 *.ts
 *.tsx
-!@types/*.d.ts
+!*.d.ts
