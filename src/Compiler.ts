@@ -175,7 +175,7 @@ export class Compiler
 
         if (printResults && "" !== outer.output)
         {
-            this.logger.logToolOutput(`Found ${outer.postcssResults.length} Stylelint issues:`, outer.output);
+            this.logger.logToolOutput(`Found ${outer.results.length} Stylelint issues:`, outer.output);
         }
 
         return outer.errored;
