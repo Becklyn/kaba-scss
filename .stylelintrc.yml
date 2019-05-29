@@ -93,7 +93,9 @@ rules:
     selector-pseudo-element-no-unknown: true
     selector-type-case: lower
     selector-max-empty-lines: 0
-    selector-max-type: 0
+    selector-max-type:
+        - 0
+        - ignoreTypes: ["body", "html", "li", "i"]
 
     # Selector list
     selector-list-comma-newline-after: always
