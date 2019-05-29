@@ -1,0 +1,4 @@
+// to prevent false positives excluding the <li> selector from the element type styling rules
+datalist {
+    display: block;
+}
