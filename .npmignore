@@ -2,6 +2,7 @@
 /.idea
 /.vscode
 /.github
+/tests
 /tsconfig.json
 
 # ignore all .ts when publishing

@@ -24,7 +24,8 @@
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
         "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty",
-        "prepublishOnly": "npm run-script build"
+        "prepublishOnly": "npm run-script build",
+        "test": "ava"
     },
     "devDependencies": {
         "@types/chokidar": "^2.1.3",
@@ -32,10 +33,20 @@
         "@types/node": "^12.0.2",
         "@types/sass": "^1.16.0",
         "@types/stylelint": "^9.4.1",
+        "ava": "^1.4.1",
+        "glob": "^7.1.4",
         "source-map": "^0.7.3",
-        "typescript": "^3.3.1"
+        "typescript": "^3.4.5"
     },
     "engines": {
         "node": ">=8.0"
+    },
+    "ava": {
+        "files": [
+            "tests/*.js"
+        ],
+        "require": [
+            "esm"
+        ]
     }
 }
