@@ -6,3 +6,6 @@
 *.d.ts
 *.js
 !/src/@types/*.d.ts
+
+# Allow test files
+!/tests/*.js
