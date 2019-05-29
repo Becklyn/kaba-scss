@@ -248,13 +248,12 @@ export class Compiler
     private async writeFiles (css: string, sourceMap: SourceMapGenerator, entry: CompilationEntry): Promise<void>
     {
         return fs.ensureDir(entry.outDir)
-            .then(
-                () =>
-                {
-                    fs.writeFile(entry.outFilePath, css);
-                    fs.writeFile(entry.mapFilePath, sourceMap.toString());
-                }
-            );
+            .then(() => {
+                return Promise.all([
+                    fs.writeFile(entry.outFilePath, css),
+                    fs.writeFile(entry.mapFilePath, sourceMap.toString()),
+                ]);
+            });
     }
 
 

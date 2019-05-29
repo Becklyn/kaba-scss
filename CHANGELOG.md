@@ -1,30 +1,18 @@
-Changelog for 2.0.0
-===================
+2.1
+===
 
-## :boom: Breaking Changes
-
-*   Change config parameters
+*   Ensure that compiled CSS file is always written.
 
 
-## :sparkles: Improvements
+2.0
+===
 
+*   BC Break: Change config parameters
 *   The `logger` parameter for the constructor is now optional .
-
-
-## :gift: New Features
-
 *   Always build (external) source maps
 *   Added own logger implementation
-
-
-## :bug: Bug Fixes
-
 *   Fix source maps support
 *   Lint files only once, even if `node-sass` reports them multiple times.
-
-
-## :hammer_and_wrench: Internal
-
 *   Change implementation to TypeScript
 *   Internal refactoring and simplifications
 *   Add GitHub infrastructure (like Changelog, Update files and PR template)
