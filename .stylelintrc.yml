@@ -95,7 +95,7 @@ rules:
     selector-max-empty-lines: 0
     selector-max-type:
         - 0
-        - ignoreTypes: ["li"]
+        - ignoreTypes: ["body", "html", "li", "i"]
 
     # Selector list
     selector-list-comma-newline-after: always
