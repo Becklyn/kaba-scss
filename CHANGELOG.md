@@ -1,3 +1,9 @@
+2.1
+===
+
+*   Ensure that compiled CSS file is always written.
+
+
 2.0
 ===
 
@@ -12,3 +18,4 @@
 *   Add GitHub infrastructure (like Changelog, Update files and PR template)
 *   Update ignore files for TypeScript builds
 *   Updated `kleur` to 3.0
+
