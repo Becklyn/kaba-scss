@@ -104,6 +104,7 @@ rules:
             - svg
             - td
             - th
+            - tr
 
     # Selector list
     selector-list-comma-newline-after: always
