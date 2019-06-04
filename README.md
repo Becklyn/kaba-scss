@@ -12,7 +12,7 @@ Setting the Browserlist Config
 First install the package:
 
 ```bash
-npm i @becklyn/browserslist-config
+npm i -D @becklyn/browserslist-config
 ```
 
 Then activate it in your project's `package.json`:
