@@ -13,7 +13,6 @@ export interface KabaScssOptions
     lint: boolean;
     fix: boolean;
     cwd: string;
-    browserList: string[];
 }
 
 export interface CompilationEntry
@@ -54,7 +53,6 @@ export class KabaScss
             lint: false,
             fix: false,
             cwd: process.cwd(),
-            browserList: ["last 2 versions", "IE 11"],
         }, options) as KabaScssOptions;
 
         this.logger = logger || new PrefixedLogger(bgMagenta(white(" SCSS ")), this.options.cwd);
