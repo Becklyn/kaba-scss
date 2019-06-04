@@ -99,6 +99,8 @@ rules:
             - a
             - body
             - button
+            - dd
+            - dt
             - html
             - i
             - li
