@@ -1,3 +1,9 @@
+3.0
+===
+
+*   The `browserList` config was removed.
+
+
 2.1
 ===
 

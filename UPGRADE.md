@@ -1,5 +1,10 @@
-Upgrade from 1.x to 2.0
-=======================
+2.x to 3.0
+==========
+
+*   The `browserList` option was removed. Use the becklyn package instead (see the README for details).
+
+1.x to 2.0
+==========
 
 *   The option keys of the constructor have changed:
     *   `isDebug` -> now: `debug`
