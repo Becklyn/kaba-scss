@@ -1,17 +1,23 @@
-3.0
-===
+3.0.1
+=====
+
+*   Improved debug compiled CSS: not minified anymore + source comments.
+
+
+3.0.0
+=====
 
 *   The `browserList` config was removed.
 
 
-2.1
-===
+2.1.0
+=====
 
 *   Ensure that compiled CSS file is always written.
 
 
-2.0
-===
+2.0.0
+=====
 
 *   BC Break: Change config parameters
 *   The `logger` parameter for the constructor is now optional .

@@ -197,7 +197,8 @@ export class Compiler
                         includePaths: [
                             path.dirname(entry.src),
                         ],
-                        outputStyle: "compressed",
+                        outputStyle: "expanded",
+                        sourceComments: this.options.debug,
                         importer: (url: string) => this.resolveImport(url),
                     },
                     (error: Error|undefined, result: CompilationResult) =>
