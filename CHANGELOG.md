@@ -1,3 +1,9 @@
+3.0.2
+=====
+
+*   Updated the list of allowed element types in SCSS, added: `strong` + `em`
+
+
 3.0.1
 =====
 
