@@ -101,10 +101,12 @@ rules:
             - button
             - dd
             - dt
+            - em
             - html
             - i
             - li
             - path
+            - strong
             - svg
             - td
             - th
