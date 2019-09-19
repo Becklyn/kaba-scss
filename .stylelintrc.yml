@@ -104,6 +104,7 @@ rules:
             - em
             - html
             - i
+            - img
             - li
             - path
             - strong

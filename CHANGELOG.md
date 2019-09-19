@@ -1,3 +1,9 @@
+3.0.3
+=====
+
+*   Updated the list of allowed element types in SCSS, added: `img`
+
+
 3.0.2
 =====
 
