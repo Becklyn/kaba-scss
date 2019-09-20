@@ -50,7 +50,9 @@ export class Compiler
         this.logger = logger;
         this.stylelintConfigFile = path.join(__dirname, "../.stylelintrc.yml");
         this.postProcessor = postcss([
-            require("autoprefixer")(),
+            require("autoprefixer")({
+                grid: "no-autoplace",
+            }),
             require("postcss-reporter")({
                 clearReportedMessages: true,
             }),
