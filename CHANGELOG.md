@@ -1,3 +1,10 @@
+3.1.0
+=====
+
+*   Enable grid support in autoprefixer
+
+
+
 3.0.3
 =====
 
