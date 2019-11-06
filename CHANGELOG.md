@@ -1,3 +1,9 @@
+3.1.1
+=====
+
+*   Only lint files from the project directory.
+
+
 3.1.0
 =====
 
