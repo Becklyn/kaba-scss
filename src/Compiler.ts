@@ -152,7 +152,11 @@ export class Compiler
 
         files.forEach(filePath =>
         {
-            if (filePath[0] !== "~" && !/\/(node_modules|vendor)\//.test(filePath))
+            if (
+                filePath[0] !== "~"
+                && !/\/(node_modules|vendor)\//.test(filePath)
+                && filePath.startsWith(this.options.cwd)
+            )
             {
                 filesToLintMap[filePath] = true;
             }
