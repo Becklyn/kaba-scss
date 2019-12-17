@@ -1,15 +1,13 @@
-import {SourceMapGenerator, SourceMapConsumer} from "source-map";
 import {CompilationEntry, KabaScssOptions, UniqueKeyMap} from "./index";
 import {PrefixedLogger} from "./PrefixedLogger";
+import {red, yellow} from "kleur";
+import {lint} from "stylelint";
 
-const {red, yellow} = require("kleur");
 const csso = require("csso");
-const fs = require("fs-extra");
-const path = require("path");
-// @ts-ignore
-const postcss = require("postcss");
-const sass = require("node-sass");
-const stylelint = require("stylelint");
+import fs = require("fs-extra");
+import path = require("path");
+import postcss = require("postcss");
+import sass = require("node-sass");
 
 interface CompilationResult
 {
@@ -24,11 +22,6 @@ interface CompilationResult
     };
 }
 
-interface PostProcessingResult
-{
-    map: SourceMapGenerator,
-    css: string;
-}
 
 
 /**
@@ -39,7 +32,7 @@ export class Compiler
     private options: KabaScssOptions;
     private logger: PrefixedLogger;
     private stylelintConfigFile: string;
-    private postProcessor: any;
+    private postProcessor: postcss.Processor;
 
     /**
      *
@@ -116,16 +109,12 @@ export class Compiler
                 sourceMap: true,
             });
 
-            minified.map.applySourceMap(
-                await SourceMapConsumer.fromSourceMap(result.map),
-                entry.src
-            );
-
+            minified.map.applySourceMap(result.map, entry.src);
             result = minified;
         }
 
         // write output
-        await this.writeFiles(result.css, result.map, entry);
+        await this.writeFiles(result.css, result.map.toString(), entry);
 
         this.logger.logBuildSuccess(entry.basename, process.hrtime(start));
         return hasLintError;
@@ -169,7 +158,7 @@ export class Compiler
             return false;
         }
 
-        let outer = await stylelint.lint({
+        let outer = await lint({
             configFile: this.stylelintConfigFile,
             files: filesToLint,
             formatter: "string",
@@ -225,7 +214,7 @@ export class Compiler
     /**
      * Handles the post processing
      */
-    private async postProcess (css: CompilationResult, entry: CompilationEntry) : Promise<PostProcessingResult>
+    private async postProcess (css: CompilationResult, entry: CompilationEntry) : Promise<postcss.Result>
     {
         try
         {
@@ -237,7 +226,7 @@ export class Compiler
                     inline: false,
                     prev: css.map.toString(),
                 },
-            }) as PostProcessingResult;
+            });
         }
         catch (error)
         {
@@ -250,15 +239,13 @@ export class Compiler
     /**
      * Writes the output css file
      */
-    private async writeFiles (css: string, sourceMap: SourceMapGenerator, entry: CompilationEntry): Promise<void>
+    private async writeFiles (css: string, sourceMap: string, entry: CompilationEntry): Promise<void>
     {
-        return fs.ensureDir(entry.outDir)
-            .then(() => {
-                return Promise.all([
-                    fs.writeFile(entry.outFilePath, css),
-                    fs.writeFile(entry.mapFilePath, sourceMap.toString()),
-                ]);
-            });
+        await fs.ensureDir(entry.outDir);
+        await Promise.all([
+            fs.writeFile(entry.outFilePath, css),
+            fs.writeFile(entry.mapFilePath, sourceMap),
+        ]);
     }
 
 

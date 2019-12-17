@@ -1,3 +1,9 @@
+3.1.2
+=====
+
+*   (improvement) all dependencies were bumped, that mainly includes `csso` v4 and `stylelint` v12
+
+
 3.1.1
 =====
 
