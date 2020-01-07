@@ -1,7 +1,7 @@
 import test from "ava";
 import {KabaScss} from "../../src/index";
 import {MemoryLogger} from "../../src/Logger/MemoryLogger";
-import {gray} from "kleur";
+import {gray, red} from "kleur";
 const path = require("path");
 const fs = require("fs-extra");
 
@@ -12,8 +12,12 @@ const fs = require("fs-extra");
  */
 export function testScssCompilation (scssFilePath, options = {})
 {
+    if (options.lint !== undefined && options.lint !== true)
+    {
+        throw new Error(red("Test definition error:\nCan't set the `lint` option to anything besides true (as otherwise the errors that can fail the test are not visible)."));
+    }
+
     let relativeFilePath = path.relative(process.cwd(), scssFilePath);
-    options.lint = true;
 
     test(
         `Compile SCSS file '${relativeFilePath}' with options: ${JSON.stringify(options)}`,
@@ -23,6 +27,8 @@ export function testScssCompilation (scssFilePath, options = {})
             const outputDir = path.join(__dirname, ".dist");
             fs.removeSync(outputDir);
 
+            // force lint to true to always show the errors
+            options.lint = true;
             const logger = new MemoryLogger();
             const compiler = new KabaScss(options, logger);
 

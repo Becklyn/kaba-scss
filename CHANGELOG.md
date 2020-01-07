@@ -1,3 +1,9 @@
+3.3.2
+=====
+
+*   (improvement) Properly handle `lint` parameters in the test helper.
+
+
 3.3.1
 =====
 
