@@ -3,7 +3,8 @@
 /.github
 /.travis.yml
 /.vscode
-/tests
+/tests/*
+!/tests/helpers
 /tsconfig.json
 
 # ignore all .ts when publishing
