@@ -1,3 +1,9 @@
+3.2.0
+=====
+
+*   (feature) Added `MemoryLogger` to ease debugging.
+
+
 3.1.2
 =====
 

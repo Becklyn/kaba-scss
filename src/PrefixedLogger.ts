@@ -101,7 +101,7 @@ export class PrefixedLogger
      */
     public log (message: string) : void
     {
-        console.log(`${gray(this.getCurrentTime())} ${this.prefix} ${message}`);
+        this.output(`${gray(this.getCurrentTime())} ${this.prefix} ${message}`);
     }
 
 
@@ -111,7 +111,7 @@ export class PrefixedLogger
     public logToolOutput (message: string, output: string): void
     {
         this.log(message);
-        console.log(output);
+        this.output(output);
     }
 
 
@@ -126,5 +126,14 @@ export class PrefixedLogger
                 val => ("" + val).padStart(2, "0")
             )
             .join(":");
+    }
+
+
+    /**
+     * Outputs the message
+     */
+    protected output (message: string) : void
+    {
+        console.log(message);
     }
 }
