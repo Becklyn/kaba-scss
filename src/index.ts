@@ -1,8 +1,8 @@
 import {Compiler} from "./Compiler";
 import {PrefixedLogger} from "./PrefixedLogger";
 const {bgMagenta, white} = require("kleur");
-const chokidar = require("chokidar");
-const fs = require("fs-extra");
+import chokidar = require("chokidar");
+import fs = require("fs-extra");
 const path = require("path");
 
 
@@ -172,7 +172,7 @@ export class KabaScss
     /**
      * Runs the task
      */
-    public async run () : Promise<boolean|null>
+    public async run () : Promise<boolean|void>
     {
         let hasLintError = await this.compileAll(this.options.lint);
 
