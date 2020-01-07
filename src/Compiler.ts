@@ -58,7 +58,7 @@ export class Compiler
      * Compiles the given entry
      *
      */
-    public async compile (entry: CompilationEntry, lint: boolean = true) : Promise<boolean>
+    public async compile (entry: CompilationEntry, showLintErrors: boolean = true) : Promise<boolean>
     {
         // start timer
         let start = process.hrtime();
@@ -101,7 +101,7 @@ export class Compiler
         let result = await this.postProcess(sassResult, entry);
 
         // always lint, as we need the info whether there are errors
-        let hasLintError = await this.lintAll([entry.src].concat(sassResult.stats.includedFiles), lint);
+        let hasLintError = await this.lintAll([entry.src].concat(sassResult.stats.includedFiles), showLintErrors);
 
         if (!this.options.debug)
         {
