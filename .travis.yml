@@ -4,7 +4,7 @@ language: node_js
 node_js:
     - node
 
-before_script:
+script:
     - npm run-script build
     - npm audit
     - npx prettier-package-json package.json --list-different --tab-width 4
