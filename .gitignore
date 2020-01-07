@@ -8,4 +8,4 @@
 !/src/@types/*.d.ts
 
 # Allow test files
-!/tests/*.js
+!/tests/**/*.js

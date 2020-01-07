@@ -1,3 +1,4 @@
+import {SourceMapConsumer} from "source-map";
 import {CompilationEntry, KabaScssOptions, UniqueKeyMap} from "./index";
 import {PrefixedLogger} from "./PrefixedLogger";
 import {red, yellow} from "kleur";
@@ -109,7 +110,7 @@ export class Compiler
                 sourceMap: true,
             });
 
-            minified.map.applySourceMap(result.map, entry.src);
+            minified.map.applySourceMap(new SourceMapConsumer(result.map.toJSON()), entry.src);
             result = minified;
         }
 
