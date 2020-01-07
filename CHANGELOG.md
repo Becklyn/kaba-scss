@@ -1,3 +1,12 @@
+3.3.0
+=====
+
+*   (internal) Add compilation tests, to check whether the `KabaScss` compiler itself is working.
+*   (bug) Fix the broken source map generation in CSSO.
+*   (feature) Add test helpers to ease SCSS compilation testing in libraries. 
+*   (internal) Fix npmignore to ignore all tests, except the helpers.
+
+
 3.2.0
 =====
 
