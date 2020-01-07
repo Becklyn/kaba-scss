@@ -1,3 +1,10 @@
+3.3.1
+=====
+
+*   (bug) Fix wrong return value check in test helper.
+*   (improvement) Improve output of test helper.
+
+
 3.3.0
 =====
 

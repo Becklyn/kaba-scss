@@ -91,17 +91,17 @@ export class KabaScss
      * Compiles all entry files
      *
      * @private
-     * @param {boolean} lint
+     * @param {boolean} showLintErrors
      * @return {boolean} whether there were any lint errors
      */
-    private async compileAll (lint: boolean) : Promise<boolean>
+    private async compileAll (showLintErrors: boolean) : Promise<boolean>
     {
         this.logger.logBuildStart();
 
         this.removeAllOutDirs();
 
         let hasLintErrors = await Promise.all(
-            this.entries.map(entry => this.compiler.compile(entry, lint))
+            this.entries.map(entry => this.compiler.compile(entry, showLintErrors))
         );
 
         return hasLintErrors.includes(true);

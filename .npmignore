@@ -1,6 +1,7 @@
 .DS_Store
 /.idea
 /.github
+/.stylelintcache
 /.travis.yml
 /.vscode
 /tests/*

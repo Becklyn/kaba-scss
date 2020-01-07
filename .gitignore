@@ -9,3 +9,4 @@
 
 # Allow test files
 !/tests/**/*.js
+/.stylelintcache
