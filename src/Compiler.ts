@@ -258,19 +258,24 @@ export class Compiler
         if (url[0] === "~")
         {
             // map of file extensions and whether the file should be directly loaded or just as path returned
-            let extensions: {[extension: string]: boolean} = {
-                ".scss": false,
-                ".css": true,
-                "": false,
+            const fileNamePatterns: {[extension: string]: boolean} = {
+                "_%s.scss": false,
+                "_%s.css": true,
+                "%s.scss": false,
+                "%s.css": true,
+                "%s": false,
             };
 
-            for (let extension in extensions)
+            for (let pattern in fileNamePatterns)
             {
                 try {
-                    let loadFileContent = extensions[extension];
-                    let filePath = require.resolve(`${url.substr(1)}${extension}`);
+                    const shouldLoadFileContent = fileNamePatterns[pattern];
+                    const dir = path.dirname(url.substr(1));
+                    const filename = path.basename(url.substr(1));
 
-                    if (loadFileContent)
+                    const filePath = require.resolve(`${dir}/${pattern.replace('%s', filename)}`);
+
+                    if (shouldLoadFileContent)
                     {
                         return {
                             contents: fs.readFileSync(filePath, "utf-8"),
