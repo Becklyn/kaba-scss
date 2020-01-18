@@ -1,4 +1,5 @@
 /.idea
+/.stylelintcache
 /node_modules
 /package-lock.json
 
@@ -9,4 +10,3 @@
 
 # Allow test files
 !/tests/**/*.js
-/.stylelintcache

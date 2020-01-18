@@ -1,3 +1,9 @@
+3.3.3
+=====
+
+*   (improvement) Added support for loading `_` prefixed packages from node_modules.
+
+
 3.3.2
 =====
 
