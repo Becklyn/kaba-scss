@@ -7,7 +7,7 @@
         "type": "git",
         "url": "https://github.com/Becklyn/kaba-scss.git"
     },
-    "version": "3.3.4",
+    "version": "3.3.5",
     "main": "src/index.js",
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
