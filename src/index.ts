@@ -180,8 +180,8 @@ export class KabaScss
         {
             let watcher = chokidar.watch([],{
                 persistent: true,
-                cwd: this.options.cwd,
                 ignoreInitial: true,
+                // don't pass `cwd` here to, as we want full file paths
             });
 
             watcher
