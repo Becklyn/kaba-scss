@@ -1,3 +1,9 @@
+3.3.5
+=====
+
+*   (bug) Fix linting of watched files.
+
+
 3.3.4
 =====
 
