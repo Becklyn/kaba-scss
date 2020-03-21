@@ -1,3 +1,9 @@
+3.3.6
+=====
+
+*   (improvement) Also allow unqualified `<mark>` in Stylelint.
+
+
 3.3.5
 =====
 
