@@ -49,8 +49,6 @@ export function testScssCompilation (scssFilePath, options = {})
                 );
             }
 
-
-
             // clean
             fs.removeSync(outputDir);
         }
