@@ -1,3 +1,10 @@
+3.3.6
+=====
+
+*   (improvement) Also allow unqualified `<mark>` in Stylelint.
+*   (improvement) Bump dependencies.
+
+
 3.3.5
 =====
 
