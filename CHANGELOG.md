@@ -1,3 +1,9 @@
+3.3.7
+=====
+
+*   (improvement) Bump required `node` to `12+`.
+
+
 3.3.6
 =====
 
