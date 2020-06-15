@@ -23,6 +23,7 @@
         "kleur": "^3.0.1",
         "node-sass": "^4.13.1",
         "postcss": "^7.0.27",
+        "postcss-css-variables": "^0.17.0",
         "postcss-reporter": "^6.0.1",
         "pretty-hrtime": "^1.0.3",
         "stylelint": "^13.3.2"

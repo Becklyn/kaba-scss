@@ -1,3 +1,9 @@
+3.3.8
+=====
+
+*   (bug) Also transform css variables (for IE 11).
+
+
 3.3.7
 =====
 
