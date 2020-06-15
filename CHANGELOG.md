@@ -2,6 +2,7 @@
 =====
 
 *   (bug) Also transform css variables (for IE 11).
+*   (improvement) Bump dependencies.
 
 
 3.3.7
