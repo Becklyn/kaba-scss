@@ -16,27 +16,28 @@
         "test": "ava"
     },
     "dependencies": {
-        "autoprefixer": "^9.7.6",
-        "chokidar": "^3.3.1",
+        "autoprefixer": "^9.8.0",
+        "chokidar": "^3.4.0",
         "csso": "^4.0.3",
-        "fs-extra": "^9.0.0",
+        "fs-extra": "^9.0.1",
         "kleur": "^3.0.1",
-        "node-sass": "^4.13.1",
-        "postcss": "^7.0.27",
+        "node-sass": "^4.14.1",
+        "postcss": "^7.0.32",
+        "postcss-css-variables": "^0.17.0",
         "postcss-reporter": "^6.0.1",
         "pretty-hrtime": "^1.0.3",
-        "stylelint": "^13.3.2"
+        "stylelint": "^13.6.0"
     },
     "devDependencies": {
-        "@types/fs-extra": "^8.1.0",
-        "@types/node": "^13.11.1",
-        "@types/node-sass": "^4.11.0",
+        "@types/fs-extra": "^9.0.1",
+        "@types/node": "^14.0.13",
+        "@types/node-sass": "^4.11.1",
         "@types/sass": "^1.16.0",
         "@types/stylelint": "^9.10.1",
-        "ava": "^3.7.0",
+        "ava": "^3.9.0",
         "esm": "^3.2.25",
         "glob": "^7.1.6",
-        "typescript": "^3.8.3"
+        "typescript": "^3.9.5"
     },
     "engines": {
         "node": ">= 12.0"

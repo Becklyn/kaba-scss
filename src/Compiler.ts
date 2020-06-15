@@ -47,6 +47,7 @@ export class Compiler
             require("autoprefixer")({
                 grid: "no-autoplace",
             }),
+            require("postcss-css-variables")(),
             require("postcss-reporter")({
                 clearReportedMessages: true,
             }),
