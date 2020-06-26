@@ -196,7 +196,7 @@ export class Compiler
                         ],
                         outputStyle: "expanded",
                         sourceComments: this.options.debug,
-                        importer: (url: string) => this.resolveImport(url),
+                        importer: (url: string, prev: string) => this.resolveImport(url, prev),
                     },
                     (error: Error|undefined, result: CompilationResult) =>
                     {
@@ -254,7 +254,7 @@ export class Compiler
     /**
      * Resolves sass imports
      */
-    private resolveImport (url: string): {file: string}|{contents: string}
+    private resolveImport (url: string, prev: string): {file: string}|{contents: string}
     {
         if (url[0] === "~")
         {
@@ -271,10 +271,18 @@ export class Compiler
             {
                 try {
                     const shouldLoadFileContent = fileNamePatterns[pattern];
-                    const dir = path.dirname(url.substr(1));
-                    const filename = path.basename(url.substr(1));
+                    const importPath = url.substr(1);
+                    const dir = path.dirname(importPath);
+                    const filename = path.basename(importPath);
 
-                    const filePath = require.resolve(`${dir}/${pattern.replace('%s', filename)}`);
+                    const filePath = require.resolve(
+                        `${dir}/${pattern.replace('%s', filename)}`, {
+                            paths: [
+                                path.dirname(prev),
+                                process.cwd(),
+                            ],
+                        },
+                    );
 
                     if (shouldLoadFileContent)
                     {
