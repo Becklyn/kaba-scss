@@ -1,3 +1,9 @@
+3.3.9
+=====
+
+*   (bug) Properly resolve imports, even if directories are symlinked.
+
+
 3.3.8
 =====
 
