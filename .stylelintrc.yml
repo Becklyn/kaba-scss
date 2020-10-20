@@ -35,7 +35,7 @@ rules:
     length-zero-no-unit: true
 
     # Unit
-    unit-blacklist: ["pc", "in", "cm", "mm", "ex"]
+    unit-disallowed-list: ["pc", "in", "cm", "mm", "ex"]
     unit-case: lower
     unit-no-unknown: true
 

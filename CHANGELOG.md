@@ -1,3 +1,9 @@
+3.3.10
+======
+
+*   (internal) Fix stylelint deprecation.
+
+
 3.3.9
 =====
 
