@@ -1,3 +1,9 @@
+3.3.11
+======
+
+*   (improvement) Bump node-sass.
+
+
 3.3.10
 ======
 

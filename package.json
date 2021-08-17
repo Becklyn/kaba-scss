@@ -21,7 +21,7 @@
         "csso": "^4.0.3",
         "fs-extra": "^9.0.1",
         "kleur": "^3.0.1",
-        "node-sass": "^4.14.1",
+        "node-sass": "^6.0.1",
         "postcss": "^7.0.32",
         "postcss-css-variables": "^0.17.0",
         "postcss-reporter": "^6.0.1",
@@ -31,7 +31,7 @@
     "devDependencies": {
         "@types/fs-extra": "^9.0.1",
         "@types/node": "^14.0.13",
-        "@types/node-sass": "^4.11.1",
+        "@types/node-sass": "^4.11.2",
         "@types/sass": "^1.16.0",
         "@types/stylelint": "^9.10.1",
         "ava": "^3.9.0",
