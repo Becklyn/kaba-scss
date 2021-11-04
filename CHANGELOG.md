@@ -2,6 +2,9 @@
 =====
 
 *   (internal) Replace `node-sass` with `sass` (dart-sass).
+*   (internal) Update GitHub Code Owners.
+
+
 3.3.11
 ======
 
