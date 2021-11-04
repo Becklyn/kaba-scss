@@ -1,3 +1,7 @@
+3.4.0
+=====
+
+*   (internal) Replace `node-sass` with `sass` (dart-sass).
 3.3.11
 ======
 
