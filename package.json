@@ -7,7 +7,7 @@
         "type": "git",
         "url": "https://github.com/Becklyn/kaba-scss.git"
     },
-    "version": "3.3.11",
+    "version": "3.4.0-0",
     "main": "src/index.js",
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
@@ -21,11 +21,11 @@
         "csso": "^4.0.3",
         "fs-extra": "^9.0.1",
         "kleur": "^3.0.1",
-        "node-sass": "^6.0.1",
         "postcss": "^7.0.32",
         "postcss-css-variables": "^0.17.0",
         "postcss-reporter": "^6.0.1",
         "pretty-hrtime": "^1.0.3",
+        "sass": "^1.43.4",
         "stylelint": "^13.6.0"
     },
     "devDependencies": {

@@ -8,21 +8,8 @@ const csso = require("csso");
 import fs = require("fs-extra");
 import path = require("path");
 import postcss = require("postcss");
-import sass = require("node-sass");
-
-interface CompilationResult
-{
-    css: Buffer;
-    map: Buffer;
-    stats: {
-        entry: string;
-        start: number;
-        includedFiles: string[];
-        end: number;
-        duration: number;
-    };
-}
-
+import sass = require("sass");
+import {Result, SassException} from "sass";
 
 
 /**
@@ -180,7 +167,7 @@ export class Compiler
     /**
      * Compiles the code to CSS
      */
-    private async compileScss (entry: CompilationEntry, fileContent: string): Promise<CompilationResult>
+    private async compileScss (entry: CompilationEntry, fileContent: string): Promise<Result>
     {
         return new Promise(
             (resolve, reject) =>
@@ -195,10 +182,9 @@ export class Compiler
                             path.dirname(entry.src),
                         ],
                         outputStyle: "expanded",
-                        sourceComments: this.options.debug,
                         importer: (url: string, prev: string) => this.resolveImport(url, prev),
                     },
-                    (error: Error|undefined, result: CompilationResult) =>
+                    (error: SassException, result: Result) =>
                     {
                         if (error)
                         {
@@ -216,7 +202,7 @@ export class Compiler
     /**
      * Handles the post processing
      */
-    private async postProcess (css: CompilationResult, entry: CompilationEntry) : Promise<postcss.Result>
+    private async postProcess (css: Result, entry: CompilationEntry) : Promise<postcss.Result>
     {
         try
         {
@@ -226,7 +212,7 @@ export class Compiler
                 map: {
                     annotation: this.options.debug,
                     inline: false,
-                    prev: css.map.toString(),
+                    prev: css.map ? css.map.toString() : null,
                 },
             });
         }
